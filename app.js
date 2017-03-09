@@ -1,6 +1,5 @@
 var express = require('express'); //require express module
 var app = express(); //creatig insatnce of express function
-var mongoose = require('mongoose'); //require moongose module
 var bodyParser = require('body-parser');
 var db = require('./db/db.js'); // create route for database
 var routes = require('./routes/index.js'); //create route for index
