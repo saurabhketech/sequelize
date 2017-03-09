@@ -1,5 +1,6 @@
 var express = require('express'); // Require express module
 var app = express()
+var mongoose = require('mongoose'); //Require mongoose module
 var router = express.Router(); //creatig insatnce of express function
 var Sequelize = require('sequelize');
 var sequelize = new Sequelize('user', 'root', '123');
@@ -14,17 +15,21 @@ router.post('/user/register', function(req, res, next) {
     var lastname = req.body.last_name;
     if ((username.length > 0) && (password.length > 0) && (cpassword.length > 0) && (email.length > 0) && (firstname.length > 0) && (lastname.length > 0)) {
         if (password == cpassword) {
-            sequelize.sync().then(function() {
-                return req.users.create({
-                    username: username,
-                    firstname: firstname,
-                    lastname: lastname,
-                    password: password,
-                    email: email
-                });
-            }).then(function(detail) {
-                res.json({ detail })
-            });
+            req.users.build({
+                username: username,
+                firstname: firstname,
+                lastname: lastname,
+                password: password,
+                email: email
+            }).save().then(function(data) {
+                res.json({ data });
+                next();
+            }).catch(function(error) {
+                if (error) {
+                    req.err = "data is not inserted";
+                    next(req.err);
+                }
+            })
         } else {
             req.err = "password not matched";
             next(req.err);
@@ -34,6 +39,4 @@ router.post('/user/register', function(req, res, next) {
         next(req.err);
     }
 });
-
-
 module.exports = router;
